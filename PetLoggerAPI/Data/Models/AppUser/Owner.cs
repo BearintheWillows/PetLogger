@@ -1,6 +1,8 @@
 namespace PetLoggerAPI.Data.Models;
 
-public class Owner {
+using Microsoft.AspNetCore.Identity;
+
+public class AppUser : IdentityUser {
 	
 	/// <summary>
 	/// Owners Id
