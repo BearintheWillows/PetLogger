@@ -20,11 +20,11 @@ public class AccountController : BaseAPIController {
 	}
 
 	[HttpPost( "login" )]
-	public async Task<IActionResult> Login(AppUserLoginDTO loginRequest) {
-		var user = await _userManager.FindByNameAsync( AppUserLoginDTO.Email );
+	public async Task<IActionResult> Login(LoginDTO loginDTO) {
+		var user = await _userManager.FindByNameAsync( loginDTO.Email );
 
-		if ( user == null || !await _userManager.CheckPasswordAsync( user, AppUserLoginDTO.Password ) ) {
-			return Unauthorized( new AppUserLoginDTO() { Success = false, Message = "Invalid Email or Password" } );
+		if ( user == null || !await _userManager.CheckPasswordAsync( user, loginDTO.Password ) ) {
+			return Unauthorized( new LoginResult() { Success = false, Message = "Invalid Email or Password" } );
 		}
 
 		;
@@ -32,6 +32,6 @@ public class AccountController : BaseAPIController {
 
 		var jwt = new JwtSecurityTokenHandler().WriteToken( secToken );
 
-		return Ok( new AppUserLoginDTO() { Success = true, Message = "Login Successful", Token = jwt } );
+		return Ok( new LoginResult() { Success = true, Message = "Login Successful", Token = jwt } );
 	}
 }

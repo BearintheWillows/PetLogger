@@ -21,7 +21,7 @@ public class JwtHandler {
 	public async Task<JwtSecurityToken> GetTokenAsync(AppUser user) {
 		JwtSecurityToken jwtOptions = new(issuer: _configuration[ "Jwt:Issuer" ],
 		                                  audience: _configuration[ "Jwt:Audience" ],
-		                                  claims: await GetClaimsAsync( user ),
+		                                  claims: await GetClaimAsync( user ),
 		                                  expires: DateTime.Now.AddMinutes(
 			                                  Convert.ToDouble( _configuration[ "Jwt:ExpirationMinutes" ] )
 		                                  ),
@@ -42,9 +42,11 @@ public class JwtHandler {
 	}
 
 	private async Task<List<Claim>> GetClaimAsync(AppUser user) {
-		var claims = new List<Claim> { new Claim( ClaimTypes.Name, user.Email ) };
+		var claims = new List<Claim> {
+			new Claim( ClaimTypes.Name, user.Email )
+		};
 
-		foreach ( var role in await _userManager.GetClaimsAsync( user )  ) {
+		foreach ( var role in await _userManager.GetRolesAsync( user )  ) {
 			claims.Add(new Claim( ClaimTypes.Role, role ) );
 		}
 

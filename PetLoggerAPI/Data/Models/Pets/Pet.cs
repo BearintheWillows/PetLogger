@@ -36,14 +36,14 @@ public class Pet {
 	/// <summary>
 	/// Foreign Key. Owner Id.
 	/// </summary>
-	[ForeignKey(nameof(Owner))]
-	public int OwnerId { get; set; }
+	[ForeignKey(nameof(AppUser))]
+	public int UserId { get; set; }
 	
 	/// <summary>
 	/// Navigation Property
 	/// Owner of Pet
 	/// </summary>
-	public Owner Owner { get; set; }
+	public AppUser User { get; set; }
 
 	public int GetAge() {
 		var now = DateTime.Now;

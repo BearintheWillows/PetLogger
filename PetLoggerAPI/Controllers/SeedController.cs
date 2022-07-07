@@ -1,5 +1,6 @@
 namespace PetLoggerAPI.Controllers;
 
+using Data;
 using Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,15 +11,17 @@ public class SeedController : BaseAPIController {
 	private readonly RoleManager<IdentityRole> _roleManager;
 	private readonly UserManager<IdentityUser> _userManager;
 	private readonly IConfiguration            _configuration;
-
+	private readonly ApplicationDbContext _context;
 	public SeedController(
 		RoleManager<IdentityRole> roleManager,
 		UserManager<IdentityUser> userManager,
-		IConfiguration            configuration
+		IConfiguration            configuration,
+		ApplicationDbContext      context
 	) {
 		_roleManager = roleManager;
 		_userManager = userManager;
 		_configuration = configuration;
+		_context = context;
 	}
 
 	[HttpGet]
@@ -65,37 +68,30 @@ public class SeedController : BaseAPIController {
 		//check if the standard user exists
 		var emailUser = "user@email.com";
 
-		if ( await _userManager.FindByNameAsync(emailUser) == null ){
-		//create new standard AppUser Account
-		var userUser = new AppUser {
-			SecurityStamp = Guid.NewGuid().ToString(), UserName = emailUser, Email = emailUser,
-		};
+		if ( await _userManager.FindByNameAsync( emailUser ) == null ) {
+			//create new standard AppUser Account
+			var userUser = new AppUser {
+				SecurityStamp = Guid.NewGuid().ToString(), UserName = emailUser, Email = emailUser,
+			};
 
-		//insert standard user into db
-		await _userManager.AddToRoleAsync( userUser, _configuration[ "DefaultPassword:RegisteredUser" ] );
+			//insert standard user into db
+			await _userManager.AddToRoleAsync( userUser, _configuration[ "DefaultPassword:RegisteredUser" ] );
 
-		//Confirm email and remove lockout
-		userUser.EmailConfirmed = true;
-		userUser.LockoutEnabled = false;
+			//Confirm email and remove lockout
+			userUser.EmailConfirmed = true;
+			userUser.LockoutEnabled = false;
 
-		//add the standard user to the added users list
-		addedUserList.Add( userUser );
+			//add the standard user to the added users list
+			addedUserList.Add( userUser );
+		}
 
 		//if we added at least one user, persist changes to db
-		if ( addedUserList.Count != 0 ) {
+		if ( addedUserList.Count != 0 ) 
 			await _context.SaveChangesAsync();
-
-			return new JsonResult( new {
-					success = true,
-					message = "Default users created successfully",
-					Count = addedUserList.Count,
-					Users = addedUserList
-				}
-			);
+		
+		return new JsonResult( new {
+				Count = addedUserList.Count,
+				Users = addedUserList });
 		}
 	}
-}
-
-
-}
 			

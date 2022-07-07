@@ -2,7 +2,7 @@ namespace PetLoggerAPI.Data.Models;
 
 using System.ComponentModel.DataAnnotations;
 
-public class AppUserLoginDTO {
+public class LoginDTO {
 	[Required( ErrorMessage = "Username is required" )]
 	public string Email { get; set; } = null!;
 	

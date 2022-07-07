@@ -13,8 +13,8 @@ public class PetEntityTypeConfig : IEntityTypeConfiguration<Pet> {
 		builder.Property( p => p.Breed ).IsRequired();
 		builder.Property( p => p.DateOfBirth ).IsRequired();
 		builder
-		   .HasOne( p => p.Owner )
+		   .HasOne( p => p.User )
 		   .WithMany( p => p.Pets )
-		   .HasForeignKey( p => p.OwnerId );
+		   .HasForeignKey( p => p.UserId );
 	}
 }
